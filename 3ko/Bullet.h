@@ -3,7 +3,7 @@
 
 
 #define MAX_BULLETS				(200)
-#define BULLET_SPD				(1.0f)
+#define BULLET_SPD				(0.1f)
 #define MESH_FILE_PATH			"asset/mesh/Bullet.x"
 
 

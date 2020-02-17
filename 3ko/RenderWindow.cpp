@@ -19,13 +19,13 @@ bool RenderWindow::Initialize(WindowContainer * pWindowContainer, HINSTANCE hIns
 	wr.top = centerScreenY - this->height / 2;
 	wr.right = wr.left + this->width;
 	wr.bottom = wr.top + this->height;
-	AdjustWindowRect(&wr, WS_CAPTION | WS_MINIMIZEBOX | WS_SYSMENU, FALSE);
+	AdjustWindowRect(&wr, WS_POPUP | WS_VISIBLE, FALSE);
 
 
 	this->handle = CreateWindowEx(0,							//Extended Windows style
 		this->window_class.c_str(),						//Window class name
 		this->window_title.c_str(),						//Window Title
-		WS_CAPTION | WS_MINIMIZEBOX | WS_SYSMENU,				//Windows style
+		WS_POPUP | WS_VISIBLE,				//Windows style
 		wr.left,														//Window X Position
 		wr.top,														//Window Y Postiton
 		wr.right - wr.left,											//Window Width

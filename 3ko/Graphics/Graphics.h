@@ -31,6 +31,9 @@ public:
 	LPDIRECT3DDEVICE9 GetDevice();
 	Camera camera;
 	int playerHP, enemyHP;
+
+	MeshClass			meshController;
+
 private:
 	bool InitializeDirectX(HWND hwnd);
 	bool UninitializeDirectX(HWND hwnd);
@@ -42,7 +45,6 @@ private:
 	LPD3DXSPRITE		pD3Dspt;
 
 	Texture				textureController;
-	MeshClass			meshController;
 
 	int					windowWidth = 0;
 	int					windowHeight = 0;

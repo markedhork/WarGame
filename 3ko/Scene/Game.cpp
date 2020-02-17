@@ -68,14 +68,6 @@ bool Game::Set()
 int Game::Update()
 {
 	this->bullet.Update();
-	this->player.hp -= this->bullet.UpdateEnemy(this->player.pos);
-	msg.pos = player.pos;
-	msg.rot = player.rot;
-	msg.dir = player.vec_front;
-	msg.anim = player.anim;
-	msg.hp = player.hp;
-	this->network->Send(&msg);
-
 	if (this->network->IfNewMsg())
 	{
 		msg = this->network->GetMsg();
@@ -85,6 +77,7 @@ int Game::Update()
 		enemy.anim = msg.anim;
 		enemy.hp = msg.hp;
 	}
+
 
 	if (this->player.ID == 0)
 	{
@@ -165,6 +158,18 @@ int Game::Update()
 	ctime = GetTickCount();
 	player.pos = Game_mesh[this->player.ID].pos;
 	player.rot = Game_mesh[this->player.ID].rot;
+
+	this->player.hp -= this->bullet.UpdateEnemy(this->player.pos);
+
+	msg.pos = player.pos;
+	msg.rot = player.rot;
+	msg.dir = player.vec_front;
+	msg.anim = player.anim;
+	msg.hp = player.hp;
+	this->network->Send(&msg);
+
+
+
 	if (enemy.hp > 0 && player.hp > 0)
 	{
 		return GAME_NUM;
