@@ -1,8 +1,7 @@
 #include "SceneMgr.h"
 
 static Sprite sprite[] = {
-	{D3DXVECTOR3(0,0,0.0f),D3DXVECTOR3(0,0,0),D3DXVECTOR2(1,1),TEXTURE_INDEX_TITLE_1},
-	{D3DXVECTOR3(565.5f,565.5f,0.0f),D3DXVECTOR3(0,0,0),D3DXVECTOR2(1,1),TEXTURE_INDEX_TITLE_BT},
+	{D3DXVECTOR3(0,0,0.0f),D3DXVECTOR3(0,0,0),D3DXVECTOR2(1,1),TEXTURE_INDEX_HOST},
 };
 static Mesh mesh[] = {
 	{D3DXVECTOR3(-7 * SIZE,-0.5*SIZE,0),D3DXVECTOR3(0,0,0),D3DXVECTOR3(1,1,1),MESH_SOLDIER01},
@@ -16,7 +15,8 @@ static const int MESH_COUNT = sizeof(mesh) / sizeof(mesh[0]);
 
 bool Lobby::Set()
 {
-	this->gfx->Set(sprite, 0, mesh, 0);
+
+	this->gfx->Set(sprite, 1, mesh, 0);
 	this->gfx->camera.SetPosition(0, 0, -5.0f);
 	this->gfx->camera.SetRotation(0, D3DXToRadian(-10.0f), 0);
 
@@ -25,6 +25,14 @@ bool Lobby::Set()
 		"Arial", &pDXfont);
 
 	this->NetType = this->network->GetType();
+	if (this->NetType == HOSTROOM_NUM)
+	{
+		sprite[0].index = TEXTURE_INDEX_HOST;
+	}
+	else
+	{
+		sprite[0].index = TEXTURE_INDEX_JOINER;
+	}
 	return true;
 }
 
@@ -117,7 +125,7 @@ bool Lobby::Draw()
 				strlen((LPCSTR)&timeText),
 				&textbox,
 				DT_CENTER | DT_VCENTER,
-				D3DCOLOR_ARGB(255, 120, 120, 255));
+				D3DCOLOR_ARGB(255, 255, 255, 255));
 		}
 		else
 		{

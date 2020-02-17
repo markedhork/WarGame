@@ -15,11 +15,12 @@ static const TextureFile g_TextureFiles[] = {
 	{ "asset/textures/sandground.jpg", 400, 400 },
 	{ "asset/textures/box.jpg", 1024, 1024 },
 	{ "asset/textures/danger.png", 512, 512 },
-	{ "asset/textures/tank.jpg", 223, 226 },
 	{ "asset/textures/sky.jpg", 400, 400 },
 
 	{ "asset/textures/bt.png", 69, 69 },
 	{ "asset/textures/Title_1.png", 1600, 900 },
+	{ "asset/textures/Host.png", 1600, 900 },
+	{ "asset/textures/Joiner.png", 1600, 900 },
 };
 
 // 読み込みテクスチャ数
@@ -31,12 +32,12 @@ typedef enum TextureIndex
 	TEXTURE_INDEX_SAND,
 	TEXTURE_INDEX_BOX,
 	TEXTURE_INDEX_DANGER,
-	TEXTURE_INDEX_TANK,
 	TEXTURE_INDEX_SKY,
 
 	TEXTURE_INDEX_TITLE_BT,
 	TEXTURE_INDEX_TITLE_1,
-	TEXTURE_INDEX_TITLE_BG,
+	TEXTURE_INDEX_HOST,
+	TEXTURE_INDEX_JOINER,
 
 	TEXTURE_INDEX_MAX
 };

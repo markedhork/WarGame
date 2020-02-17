@@ -5,8 +5,8 @@ static Sprite Title_sprite[] = {
 	{D3DXVECTOR3(565.5f,565.5f,0.0f),D3DXVECTOR3(0,0,0),D3DXVECTOR2(1,1),TEXTURE_INDEX_TITLE_BT},
 };
 static Mesh Title_mesh[] = {
-	{D3DXVECTOR3(-7 * SIZE,-0.5*SIZE,0),D3DXVECTOR3(90,0,0),D3DXVECTOR3(1,1,1),MESH_SOLDIER01},
-	{D3DXVECTOR3(7 * SIZE,-0.5*SIZE,0),D3DXVECTOR3(-90,0,0),D3DXVECTOR3(1,1,1),MESH_SOLDIER02},
+	{D3DXVECTOR3(-2 * SIZE,-0.5*SIZE,0),D3DXVECTOR3(90,0,0),D3DXVECTOR3(1,1,1),MESH_SOLDIER01},
+	{D3DXVECTOR3(2 * SIZE,-0.5*SIZE,0),D3DXVECTOR3(-90,0,0),D3DXVECTOR3(1,1,1),MESH_SOLDIER02},
 };
 
 // 読み込みテクスチャ数
@@ -16,48 +16,23 @@ static const int MESH_COUNT_TT = sizeof(Title_mesh) / sizeof(Title_mesh[0]);
 bool Title::Set()
 {
 	this->gfx->Set(Title_sprite, SPRITE_COUNT_TT, Title_mesh, MESH_COUNT_TT);
-	this->gfx->camera.SetPosition(0, 0, -5.0f);
+	this->gfx->camera.SetPosition(0, 0, 0.0f);
 	this->gfx->camera.SetRotation(0, D3DXToRadian(-10.0f), 0);
 
 	D3DXCreateFont(this->gfx->GetDevice(), 100, 30, FW_BOLD, 1, false, DEFAULT_CHARSET,
 		OUT_DEFAULT_PRECIS, DEFAULT_QUALITY, DEFAULT_PITCH | FF_DONTCARE,
 		"Arial", &pDXfont);
 
+	for (int i = 0; i < MESH_COUNT_TT; i++)
+	{
+		this->gfx->SwitchTrack(Title_mesh[i].index, IDLE);
+	}
 	return true;
 }
 
 int Title::Update()
 {
-	//this->gfx->camera.AdjustRotation(0.005f, 0, 0);
-	while (!this->mouse->EventBufferIsEmpty())
-	{
-		MouseEvent me = this->mouse->ReadEvent();
-		if (this->mouse->IsRightDown())
-		{
-			if (me.GetType() == MouseEvent::EventType::RAW_MOVE)
-			{
-				this->gfx->camera.AdjustRotation((float)me.GetPosX()*0.01f, (float)me.GetPosY()*0.01f, 0.0f);
-			}
-		}
-	}
-
-	float cameraSpd = 0.125f;
-	if (keyboard->KeyIsPressed('W'))
-	{
-		this->gfx->camera.AdjustPosition(this->gfx->camera.GetForwardVector()*cameraSpd);
-	}
-	if (keyboard->KeyIsPressed('A'))
-	{
-		this->gfx->camera.AdjustPosition(this->gfx->camera.GetLeftVector()*cameraSpd);
-	}
-	if (keyboard->KeyIsPressed('S'))
-	{
-		this->gfx->camera.AdjustPosition(this->gfx->camera.GetBackwardVector()*cameraSpd);
-	}
-	if (keyboard->KeyIsPressed('D'))
-	{
-		this->gfx->camera.AdjustPosition(this->gfx->camera.GetRightVector()*cameraSpd);
-	}
+	this->gfx->camera.AdjustRotation(0.005f, 0, 0);
 
 	if (this->keyboard->KeyIsTrigger(VK_UP))
 	{

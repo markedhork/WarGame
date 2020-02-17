@@ -30,6 +30,7 @@ public:
 
 	LPDIRECT3DDEVICE9 GetDevice();
 	Camera camera;
+	int playerHP, enemyHP;
 private:
 	bool InitializeDirectX(HWND hwnd);
 	bool UninitializeDirectX(HWND hwnd);

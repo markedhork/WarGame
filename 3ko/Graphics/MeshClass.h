@@ -14,23 +14,29 @@ typedef struct MeshFile_tag
 } MeshFile;
 
 static const MeshFile g_MeshFiles[] = {
+
+	{ "asset/mesh/Soldier01.x"},
 	{ "asset/mesh/Soldier02.x"},
-	{ "asset/mesh/Soldier.x"},
+	{ "asset/mesh/Soldier03.x"},
 };
 
-// ì«Ç›çûÇ›meshêî
-static const int MESH_FILE_COUNT = sizeof(g_MeshFiles) / sizeof(g_MeshFiles[0]);
 
 typedef enum MeshIndex
 {
 	MESH_SOLDIER01,
 	MESH_SOLDIER02,
+	MESH_SOLDIER03,
+
+	MAX_MESH,
+
 };
 
 enum PLAYER_ANIM_INDEX
 {
 	IDLE,
 	MOVE,
+	AIM,
+	RELOAD,
 
 	MAX_ANIM,
 };
@@ -42,7 +48,7 @@ struct MeshMember
 	LPD3DXANIMATIONCONTROLLER AnimationController = NULL;    // an object that handles animation
 
 	UINT currentTrack;
-	DWORD Action[MAX_ANIM];
+	DWORD Action[MAX_ANIM] = {};
 };
 struct CUSTOM_FRAME : public D3DXFRAME
 {
@@ -60,19 +66,19 @@ class MeshClass
 {
 public:
 	void CreateMeshBuffer(HWND hwnd, LPDIRECT3DDEVICE9 pDevice);
-	void update_frames(int index, CUSTOM_FRAME* pFrame, D3DXMATRIX* pParentMatrix);
+	void update_frames(CUSTOM_FRAME* pFrame, D3DXMATRIX* pParentMatrix);
 	void update_mesh_containers(int index, CUSTOM_FRAME* pFrame);
 	void draw_mesh(int index, CUSTOM_FRAME* pFrame);
 
 public:
 	MeshMember				*mesh_members;
 private:
-	DWORD GetIndexOfAnimSet(LPCSTR string);
+	DWORD GetIndexOfAnimSet(int meshIndex, LPCSTR string);
 	void link_frames(int index, CUSTOM_FRAME* pFrame);
 private:
 	LPDIRECT3DDEVICE9		pDevice;
 
-	
+
 };
 
 class MeshAllocation :public ID3DXAllocateHierarchy

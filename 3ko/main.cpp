@@ -12,7 +12,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 	}
 
 	Engine engine;
-	if (engine.Initialize(hInstance, "#TANK GAME", "MyWindowClass", WINDOW_WIDTH, WINDOW_HEIGHT))
+	if (engine.Initialize(hInstance, "#WAR GAME", "MyWindowClass", WINDOW_WIDTH, WINDOW_HEIGHT))
 	{
 		while (engine.ProcessMessages() == true)
 		{

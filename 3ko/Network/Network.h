@@ -24,6 +24,9 @@ struct MY_MSG
 {
 	D3DXVECTOR3 pos;
 	D3DXVECTOR3 rot;
+	D3DXVECTOR3 dir;
+	int			anim;
+	int			hp;
 };
 
 //Type:1 Character Pos

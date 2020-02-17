@@ -41,16 +41,12 @@ void Graphics::Set(Sprite* sprite, int total, Mesh * mesh, int meshTotal)
 void Graphics::SwitchTrack(int objIndex, int trackIndex)
 {
 	LPD3DXANIMATIONSET pAnimationSet = NULL;
-
 	this->meshController.mesh_members[objIndex].AnimationController->GetAnimationSet(this->meshController.mesh_members[objIndex].Action[trackIndex], &pAnimationSet);
-	this->meshController.mesh_members[objIndex].AnimationController->SetTrackAnimationSet(this->meshController.mesh_members[objIndex].currentTrack, pAnimationSet);
-	pAnimationSet->Release();
-
+	this->meshController.mesh_members[objIndex].AnimationController->SetTrackEnable(this->meshController.mesh_members[objIndex].currentTrack, FALSE);
 	this->meshController.mesh_members[objIndex].AnimationController->ResetTime();
-	this->meshController.mesh_members[objIndex].AnimationController->UnkeyAllTrackEvents(this->meshController.mesh_members[objIndex].currentTrack);
+	this->meshController.mesh_members[objIndex].AnimationController->SetTrackAnimationSet(this->meshController.mesh_members[objIndex].currentTrack, pAnimationSet);
 	this->meshController.mesh_members[objIndex].AnimationController->SetTrackEnable(this->meshController.mesh_members[objIndex].currentTrack, TRUE);
-	this->meshController.mesh_members[objIndex].AnimationController->KeyTrackSpeed(this->meshController.mesh_members[objIndex].currentTrack, 1.0f, 0.01f, 0.01f, D3DXTRANSITION_EASEINEASEOUT);
-	this->meshController.mesh_members[objIndex].AnimationController->KeyTrackWeight(this->meshController.mesh_members[objIndex].currentTrack, 1.0f, 0.01f, 0.01f, D3DXTRANSITION_EASEINEASEOUT);
+
 }
 
 LPDIRECT3DDEVICE9 Graphics::GetDevice()
@@ -462,8 +458,6 @@ bool Graphics::InitializeVB()
 void Graphics::Draw()
 {
 
-	pD3DDevice->SetRenderState(D3DRS_LIGHTING, FALSE);
-
 	D3DXMATRIX mtxScl;					//スケーリング行列
 	D3DXMATRIX mtxRot;					//回転行列
 	D3DXMATRIX mtxTrs;					//平行移動行列
@@ -471,13 +465,12 @@ void Graphics::Draw()
 	//pD3DDevice->SetRenderState(D3DRS_FILLMODE, D3DFILL_WIREFRAME);
 	
 
-	for (int j = 0; j < totalMesh; j++)
+	for (int j = 0; j < this->totalMesh; j++)
 	{
 		D3DXMatrixIdentity(&mtxWorld);	//ワールド行列の単位行列の初期化
 	//スケール行列を作成＆ワールド行列へ合成
 		D3DXMatrixScaling(&mtxScl, this->pMesh[j].size.x, this->pMesh[j].size.y, 1);
 		D3DXMatrixMultiply(&mtxWorld, &mtxWorld, &mtxScl);	//World*Scaling
-
 
 		//回転行列を作成＆ワールド行列への合成
 		D3DXMatrixRotationYawPitchRoll(&mtxRot, D3DXToRadian(this->pMesh[j].rot.x), D3DXToRadian(this->pMesh[j].rot.y), D3DXToRadian(this->pMesh[j].rot.z));
@@ -490,22 +483,22 @@ void Graphics::Draw()
 		pD3DDevice->SetRenderState(D3DRS_ALPHATESTENABLE, TRUE);
 		pD3DDevice->SetRenderState(D3DRS_ALPHAFUNC, D3DCMP_GREATER);
 
-		if (this->meshController.mesh_members[j].AnimationController)
+		if (this->meshController.mesh_members[this->pMesh[j].index].AnimationController)
 		{
 			// move the animation forward by the elapsed time
-			this->meshController.mesh_members[j].AnimationController->AdvanceTime((GetTickCount() - cTime[j]) * 0.00001f, NULL);
+			this->meshController.mesh_members[this->pMesh[j].index].AnimationController->AdvanceTime((GetTickCount() - cTime[j]) * 0.00001f, NULL);
 			// reset Time for the next time through
 			cTime[j] = GetTickCount();
 		}
 
 		// update each combined matrix
-		this->meshController.update_frames(j, (CUSTOM_FRAME*)this->meshController.mesh_members[j].TopFrame, NULL);
+		this->meshController.update_frames((CUSTOM_FRAME*)this->meshController.mesh_members[this->pMesh[j].index].TopFrame, NULL);
 
 		// update the mesh containers
-		this->meshController.update_mesh_containers(j, (CUSTOM_FRAME*)this->meshController.mesh_members[j].TopFrame);
+		this->meshController.update_mesh_containers(this->pMesh[j].index, (CUSTOM_FRAME*)this->meshController.mesh_members[this->pMesh[j].index].TopFrame);
 
 		// render each mesh container
-		this->meshController.draw_mesh(j, (CUSTOM_FRAME*)this->meshController.mesh_members[j].TopFrame);
+		this->meshController.draw_mesh(this->pMesh[j].index, (CUSTOM_FRAME*)this->meshController.mesh_members[this->pMesh[j].index].TopFrame);
 	}
 }
 
@@ -554,6 +547,10 @@ void Graphics::DrawSprite()
 
 void Graphics::DrawUI()
 {
+	pD3DDevice->SetRenderState(D3DRS_ALPHAREF, (DWORD)0x00000030);
+	pD3DDevice->SetRenderState(D3DRS_ALPHATESTENABLE, TRUE);
+	pD3DDevice->SetRenderState(D3DRS_ALPHAFUNC, D3DCMP_GREATEREQUAL);
+
 	for (int index = 0; index < totalSprites; index++)
 	{
 		D3DXVECTOR3 center(0, 0, 0.0f);    // center at the upper-left corner

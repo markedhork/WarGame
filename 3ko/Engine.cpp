@@ -12,7 +12,11 @@ bool Engine::Initialize(HINSTANCE hInstance, std::string window_title, std::stri
 	{
 		return false;
 	}
-
+	DisableCursor();
+	RECT winRECT;
+	HWND handle = this->render_window.GetHWND();
+	GetWindowRect(handle, &winRECT);
+	ClipCursor(&winRECT);
 	this->Set(TITLE_NUM);
 	return true;
 }
@@ -54,6 +58,14 @@ bool Engine::ProcessMessages()
 
 void Engine::Update()
 {
+	HWND handle = this->render_window.GetHWND();
+	if (GetFocus() == handle)
+	{
+		RECT winRECT;
+		GetWindowRect(handle, &winRECT);
+		ClipCursor(&winRECT);
+	}
+	
 	this->nexScene = pScene->Update();
 	if (this->nexScene != this->recScene)
 	{

@@ -3,13 +3,13 @@
 void MeshClass::CreateMeshBuffer(HWND hwnd, LPDIRECT3DDEVICE9 pDevice)
 {
 	this->pDevice = pDevice;
-	this->mesh_members = new MeshMember[MESH_FILE_COUNT];
-	MeshAllocation memAllocator;
-	memAllocator.SetDevice(pDevice);
+	this->mesh_members = new MeshMember[MAX_MESH];
 
-	for (int i = 0; i < MESH_FILE_COUNT; i++) {
-
+	for (int i = 0; i < MAX_MESH; i++) {
+		MeshAllocation memAllocator;
+		memAllocator.SetDevice(pDevice);
 		LPD3DXBUFFER	bufShipMaterials;		//マテリアルなどのインタフェース
+		//D3DXCreateAnimationController(,)
 
 		if (D3D_OK != D3DXLoadMeshHierarchyFromX(
 			g_MeshFiles[i].filename,
@@ -32,29 +32,29 @@ void MeshClass::CreateMeshBuffer(HWND hwnd, LPDIRECT3DDEVICE9 pDevice)
 		// set up the ppFrameMatrices pointers
 		link_frames(i, (CUSTOM_FRAME*)mesh_members[i].TopFrame);
 
-		for (int j = 0; j < MAX_ANIM; j++)
-		{
-			mesh_members[i].currentTrack = 0;
-			mesh_members[i].AnimationController
-		}
+
+		mesh_members[i].currentTrack = 0;
+
 		LPD3DXANIMATIONSET pAnimationSet = NULL;
-		mesh_members[i].Action[IDLE] = this->GetIndexOfAnimSet("Idle");
-		mesh_members[i].Action[MOVE] = this->GetIndexOfAnimSet("Move");
+		mesh_members[i].Action[IDLE] = this->GetIndexOfAnimSet(i, "Idle");
+		mesh_members[i].Action[MOVE] = this->GetIndexOfAnimSet(i, "Move");
+		mesh_members[i].Action[AIM] = this->GetIndexOfAnimSet(i, "Aim");
+		mesh_members[i].Action[RELOAD] = this->GetIndexOfAnimSet(i, "Reload");
 
-		mesh_members[i].AnimationController->GetAnimationSet(mesh_members[i].Action[MOVE], &pAnimationSet);
+		mesh_members[i].AnimationController->GetAnimationSet(mesh_members[i].Action[IDLE], &pAnimationSet);
 		mesh_members[i].AnimationController->SetTrackAnimationSet(mesh_members[i].currentTrack, pAnimationSet);
+
 		pAnimationSet->Release();
+		//mesh_members[i].AnimationController->UnkeyAllTrackEvents(mesh_members[i].tracks[anim]);
+		//mesh_members[i].AnimationController->KeyTrackSpeed(mesh_members[i].tracks[anim], 1.0f, 0.01f, 0.25f, D3DXTRANSITION_LINEAR);
+		//mesh_members[i].AnimationController->KeyTrackWeight(mesh_members[i].tracks[anim], 1.0f, 0.01f, 0.25f, D3DXTRANSITION_LINEAR);
 
-		mesh_members[i].AnimationController->UnkeyAllTrackEvents(mesh_members[i].currentTrack);
 		mesh_members[i].AnimationController->SetTrackEnable(mesh_members[i].currentTrack, TRUE);
-		mesh_members[i].AnimationController->KeyTrackSpeed(mesh_members[i].currentTrack, 1.0f, 0.01f, 0.25f, D3DXTRANSITION_LINEAR);
-		mesh_members[i].AnimationController->KeyTrackWeight(mesh_members[i].currentTrack, 1.0f, 0.01f, 0.25f, D3DXTRANSITION_LINEAR);
-
 
 	}
 }
 
-void MeshClass::update_frames(int index, CUSTOM_FRAME * pFrame, D3DXMATRIX * pParentMatrix)
+void MeshClass::update_frames(CUSTOM_FRAME * pFrame, D3DXMATRIX * pParentMatrix)
 {
 	// combine the frame's matrix with the parent's matrix, if any
 	if (pParentMatrix)
@@ -64,11 +64,11 @@ void MeshClass::update_frames(int index, CUSTOM_FRAME * pFrame, D3DXMATRIX * pPa
 
 	// run for all siblings
 	if (pFrame->pFrameSibling)
-		update_frames(index, (CUSTOM_FRAME*)pFrame->pFrameSibling, pParentMatrix);
+		update_frames((CUSTOM_FRAME*)pFrame->pFrameSibling, pParentMatrix);
 
 	// run for the first child (which will then run all other children)
 	if (pFrame->pFrameFirstChild)
-		update_frames(index, (CUSTOM_FRAME*)pFrame->pFrameFirstChild,
+		update_frames((CUSTOM_FRAME*)pFrame->pFrameFirstChild,
 			&pFrame->CombTransformationMatrix);
 }
 
@@ -143,15 +143,15 @@ void MeshClass::draw_mesh(int index, CUSTOM_FRAME * pFrame)
 		draw_mesh(index, (CUSTOM_FRAME*)pFrame->pFrameFirstChild);
 }
 
-DWORD MeshClass::GetIndexOfAnimSet(LPCSTR string)
+DWORD MeshClass::GetIndexOfAnimSet(int meshIndex, LPCSTR string)
 {
 	HRESULT hr;
 	LPD3DXANIMATIONSET pAS;
 	DWORD dwRet = -1;
 
-	for (DWORD i = 0; i < mesh_members[0].AnimationController->GetNumAnimationSets(); ++i)
+	for (DWORD i = 0; i < mesh_members[meshIndex].AnimationController->GetNumAnimationSets(); ++i)
 	{
-		hr = mesh_members[0].AnimationController->GetAnimationSet(i, &pAS);
+		hr = mesh_members[meshIndex].AnimationController->GetAnimationSet(i, &pAS);
 		if (FAILED(hr))
 			continue;
 

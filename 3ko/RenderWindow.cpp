@@ -35,16 +35,17 @@ bool RenderWindow::Initialize(WindowContainer * pWindowContainer, HINSTANCE hIns
 		this->hInstance,										//Handle to the instance of module to be used with this window
 		pWindowContainer);												//Param to create window
 
+	
 	if (this->handle == NULL)
 	{
 		return false;
 	}
-
+	
 	//Bring the window up on the screen and set it as main focus.
 	ShowWindow(this->handle, SW_SHOW);
 	SetForegroundWindow(this->handle);
 	SetFocus(this->handle);
-
+	
 	return true;
 }
 
